@@ -4,14 +4,14 @@ import torchvision.transforms as transforms
 import os
 
 class data_loader():
-    def __init__(self, data_name, batch_size, path='./data', num_workers = 4):
+    def __init__(self, data_name, batch_size, dataset_size, path='./data', num_workers = 8):
         self.train_loader = None
         self.test_loader = None
         if not os.path.exists(path):
             os.mkdir(path)
 
         if data_name == "imagenet":
-            traindir = os.path.join(path, 'train/ILSVRC2012_img_train_500')
+            traindir = os.path.join(path, 'train/ILSVRC2012_img_train_%d'%(dataset_size))
             valdir = os.path.join(path, 'val')
             print("train dir: %s"%(traindir))
             print("valid dir: %s"% (valdir))
@@ -38,7 +38,7 @@ class data_loader():
                     transforms.ToTensor(),
                     normalize,
                 ])),
-                batch_size=batch_size, shuffle=False,
+                batch_size=512, shuffle=False,
                 num_workers=num_workers, pin_memory=True)
 
         elif data_name == "cifar10":
