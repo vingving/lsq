@@ -107,3 +107,55 @@ class LinearLSQ(nn.Linear):
         else:
             return F.linear(self.quan_a(x), self.quan_w(self.weight), self.bias)
 
+
+# class Conv2dLSQ_modify(nn.Module):
+#     def __init__(self, weight_bit=8):
+#         super(Conv2dLSQ_modify, self).__init__()
+#         self.bit = weight_bit
+#         self.quan_w = LSQQuantizer(bit=self.bit, is_activation=False)
+#         self.quan_a = LSQQuantizer(bit=self.bit, is_activation=True)
+#
+#
+#     def forward(self, x):
+#         if self.bit == 32:
+#             return F.conv2d(x, self.weight, self.bias, self.stride,
+#                             self.padding, self.dilation, self.groups)
+#         else:
+#             return F.conv2d(self.quan_a(x), self.quan_w(self.weight), self.bias, self.stride,
+#                             self.padding, self.dilation, self.groups)
+#
+#     def set_param(self, conv):
+#         self.in_channels = conv.in_channels
+#         self.out_channels = conv.out_channels
+#         self.kernel_size = conv.kernel_size
+#         self.stride = conv.stride
+#         self.padding = conv.padding
+#         self.dilation = conv.dilation
+#         self.groups = conv.groups
+#         self.weight = nn.Parameter(conv.weight.data.clone())
+#         try:
+#             self.bias = nn.Parameter(conv.bias.data.clone())
+#         except AttributeError:
+#             self.bias = None
+#
+# class LinearLSQ_modify(nn.Module):
+#     def __init__(self,  weight_bit=8):
+#         super(LinearLSQ_modify, self).__init__()
+#         self.bit = weight_bit
+#         self.quan_w = LSQQuantizer(bit=self.bit, is_activation=False)
+#         self.quan_a = LSQQuantizer(bit=self.bit, is_activation=True)
+#
+#     def forward(self, x):
+#         if self.bit == 32:
+#             return F.linear(x, self.weight, self.bias)
+#         else:
+#             return F.linear(self.quan_a(x), self.quan_w(self.weight), self.bias)
+#
+#     def set_param(self, linear):
+#         self.in_features = linear.in_features
+#         self.out_features = linear.out_features
+#         self.weight = nn.Parameter(linear.weight.data.clone())
+#         try:
+#             self.bias = nn.Parameter(linear.bias.data.clone())
+#         except AttributeError:
+#             self.bias = None

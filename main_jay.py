@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
-import torch.backends.cudnn as cudnn
 
 import torchvision
 import torchvision.transforms as transforms
@@ -33,7 +32,7 @@ parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
 parser.add_argument('--wd', default=5e-4, type=float, help='weight decay')
 parser.add_argument('--bit', default=32, type=int, help='bit-width for lsq quantizer')
 parser.add_argument('--dataset', default='imagenet', type=str, help='dataset name for training')
-parser.add_argument('--dataset_size', default=10, type=int, help='dataset size')
+parser.add_argument('--dataset_size', default=500, type=int, help='dataset size')
 parser.add_argument('-b', '--batch-size', default=128, type=int, metavar='N', help='mini-batch size')
 parser.add_argument('--arch', default='resnet18', type=str, help='network architecture')
 parser.add_argument('--data_root', default = '/home/com13/data/data', type=str,
@@ -43,7 +42,7 @@ parser.add_argument('--home_root', default = '/home/com13/', type=str, help='hom
 parser.add_argument('--init_from', default='./checkpoint', type=str, help='init weights from from checkpoint')
 parser.add_argument('--pretrained', dest='pretrained', action='store_true', help='use pre-trained model')
 # ------
-parser.add_argument('--lr_batch_adj', action='store_true', help='adjust learning rate according to batch step.')
+parser.add_argument('--lr_batch_adj', default=True, type=bool, help='adjust learning rate according to batch step.')
 parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true', help='evaluate model on validation set')
 parser.add_argument('--epochs', default=120, type=int, help='number of training epochs')
 
@@ -105,13 +104,13 @@ time.sleep(3)
 # for name, parameter in zip(net.state_dict().items(), net.parameters()):
 #     print("%s : %d"%(name[0],parameter.requires_grad))
 
-for name, parameter in zip(net.state_dict().items(), net.parameters()):
-    # print("%s : %d"%(name[0],parameter.requires_grad))
-    # if 'alpha' in name[0] or 'init_state' in name[0]:    ## learn conv & activation quantizaqtion steps
-    if 'quan_a' in name[0]:                                ## learn only activation quantization steps   more like ZeroQ original style
-        parameter.requires_grad = True
-    else:
-        parameter.requires_grad = False
+# for name, parameter in zip(net.state_dict().items(), net.parameters()):
+#     # print("%s : %d"%(name[0],parameter.requires_grad))
+#     # if 'alpha' in name[0] or 'init_state' in name[0]:    ## learn conv & activation quantizaqtion steps
+#     if 'quan_a' in name[0]:                                ## learn only activation quantization steps   more like ZeroQ original style
+#         parameter.requires_grad = True
+#     else:
+#         parameter.requires_grad = False
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=args.wd)
@@ -146,7 +145,7 @@ def train(epoch):
         correct += predicted.eq(targets).sum().item()
 
         progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
-                     % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
+                     % (train_loss / (batch_idx + 1), 100. * correct / total, correct, total))
 
     return (train_loss/batch_idx, correct/total)
 
