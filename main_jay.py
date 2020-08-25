@@ -203,7 +203,7 @@ for epoch in range(start_epoch, args.epochs):
     writer.add_scalar('Train/Acc1', train_acc1, epoch)
     if args.bit != 32:
         writer.add_scalar('Train/layer1[1].conv1.quan_w.alpha', net.layer1[1].conv1.quan_w.alpha, epoch)
-        writer.add_scalar('Train/layer2[1].conv1.quan_w.alpha', net.layer1[1].conv1.quan_w.alpha, epoch)
+        writer.add_scalar('Train/layer2[1].conv1.quan_w.alpha', net.layer2[1].conv1.quan_w.alpha, epoch)
 
     writer.add_scalar('Test/Loss', test_loss, epoch)
     writer.add_scalar('Test/Acc1', test_acc1, epoch)
